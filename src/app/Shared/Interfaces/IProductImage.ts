@@ -1,0 +1,6 @@
+
+interface IProductImage{
+        productImagePath:string
+    }
+    
+   
