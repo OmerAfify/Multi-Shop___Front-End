@@ -1,23 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { AccountService } from './Shared/Services/AccountServices';
+import { ShoppingCartService } from './Shared/Services/shopping-cart.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
  
   title = 'OnlineShop';
 
 
-  constructor() {
-    
+  constructor(private cartService:ShoppingCartService) {
     
   }
 
 
   ngOnInit(): void {
+
+const basket = localStorage.getItem("shoppingCart");
+
+if(basket!==null)
+    this.cartService.getShoppingCart();
+
     }
     
 

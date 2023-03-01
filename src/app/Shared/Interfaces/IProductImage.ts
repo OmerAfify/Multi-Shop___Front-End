@@ -1,5 +1,5 @@
 
-interface IProductImage{
+export interface IProductImage{
         productImagePath:string
     }
     

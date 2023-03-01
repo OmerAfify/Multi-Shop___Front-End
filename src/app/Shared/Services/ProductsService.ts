@@ -1,7 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable , OnInit} from "@angular/core";
+import { IProduct } from "../Interfaces/IProduct";
 
-@Injectable()
+@Injectable({providedIn:'root'})
 export class ProductService  implements OnInit {
 
     products:any;
@@ -18,7 +19,7 @@ export class ProductService  implements OnInit {
     }
 
     getProductById(id:number){
-        return this.http.get("https://localhost:44311/api/GetProductById/"+id)
+        return this.http.get<IProduct>("https://localhost:44311/api/GetProductById/"+id);
     }
 
 
