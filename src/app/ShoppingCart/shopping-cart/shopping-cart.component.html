@@ -17,7 +17,13 @@
     <div class="container-fluid">
         
         <div *ngIf="(this.shoppingCartSerice.ShoppingCartObservable | async)===null">
-            No Cart Items to display.
+            <h1 class="text-center">Your Cart is Empty !</h1>
+            <div class="section-title position-relative text-uppercase mb-3">
+                <div class="col-4 offset-4">
+                <a routerLink="/Shop" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Shop Now!</a>
+            </div>
+            </div>
+         
         </div>
 
         <div  *ngIf="(
@@ -70,7 +76,7 @@
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
                 <app-shopping-cart-summary></app-shopping-cart-summary>
                 <div class="section-title position-relative text-uppercase mb-3">
-                <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
+                <a routerLink="/Checkout" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</a>
             </div>
             </div>
         </div>

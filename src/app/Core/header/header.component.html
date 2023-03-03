@@ -22,13 +22,28 @@
         </div>
         <div class="col-lg-4 col-6 text-right">
 
-            <div class="btn-group">
+            <div class="btn-group" *ngIf="( userService.userObservable$ | async ) === null">
                 <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My Account</button>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <button class="dropdown-item" type="button">Sign in</button>
-                    <button class="dropdown-item" type="button">Sign up</button>
+
+                <div>
+                    <a  routerLink="/Login" class="dropdown-item" type="button">Login </a>
+                    <a   routerLink="/Register" class="dropdown-item" type="button">Sign up</a>
+                </div>  
+               
                 </div>
             </div>
+
+            <div *ngIf="( userService.userObservable$ | async ) as  user" class="btn-group">
+                <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Welcome {{user.name}}</button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a  (click)="onLogout()"  class="dropdown-item" type="button">Logout</a>
+                </div>
+            </div>
+
+
+
+
 
         </div>
     </div>

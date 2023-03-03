@@ -7,8 +7,6 @@ import { AppComponent } from './app.component';
 
 /*****************WEBSITE COMPONENTS*********************/ 
 
-import { ProductService } from './Shared/Services/ProductsService';
-
 import { CoreModule } from './Core/core.module';
 import { SharedModule } from './Shared/shared.module';
 import { ShopModule } from './Shop/shop.module';
@@ -16,6 +14,7 @@ import { ShoppingCartModule } from './ShoppingCart/shopping-cart.module';
 import { HomeModule } from './Home/home.module';
 import { AccountModule } from './Account/account.module';
 import { ErrorsModule } from './Errors/errors.module';
+import { OrderModule } from './Order/order.module';
 
 
 @NgModule({
@@ -32,6 +31,7 @@ import { ErrorsModule } from './Errors/errors.module';
     ShopModule,
     HomeModule,
     ShoppingCartModule,
+    OrderModule,
 
     SharedModule,
     CoreModule

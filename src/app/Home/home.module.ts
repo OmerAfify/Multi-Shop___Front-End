@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../Shared/shared.module';
 import { HomePageComponent } from './home-page/home-page.component';
 import { RouterModule } from '@angular/router';
+import { CoreModule } from '../Core/core.module';
 
 
 
@@ -11,6 +12,7 @@ import { RouterModule } from '@angular/router';
   imports: [
     CommonModule,
     SharedModule,
+    CoreModule,
     RouterModule.forChild([{path:"Home", component:HomePageComponent}]),
     ],exports:[RouterModule]
 
