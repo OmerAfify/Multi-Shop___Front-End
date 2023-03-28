@@ -3,6 +3,7 @@ import {  Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { BehaviorSubject, of, ReplaySubject } from "rxjs";
 import { map } from "rxjs/operators";
+import { IAddress } from "../Interfaces/IAddress";
 import { IUser } from "../Interfaces/IUser";
 
 
@@ -73,6 +74,14 @@ logout(){
     
 }
 
+
+getCurrentUserAddress(){
+  return this.http.get<IAddress>("https://localhost:44311/api/GetCurrentUserAddress");
+}
+
+SetCurrentUserAddress(address : IAddress){
+  return this.http.put<IAddress>("https://localhost:44311/api/UpdateUserAddress", address);
+}
 
 
 }

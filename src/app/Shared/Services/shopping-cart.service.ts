@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { ICartItem } from '../Interfaces/ICartItem';
 import { IProduct } from '../Interfaces/IProduct';
 import { IShoppingCartSummary } from '../Interfaces/IShoppingCartSummary';
+import { IDeliveryMethods } from '../Interfaces/IDeliveryMethods';
 import { ShoppingCart } from '../Models/ShoppingCart';
 
 @Injectable({
@@ -18,6 +19,18 @@ ShoppingCartObservable = this._ShoppingCartObservable$.asObservable();
 
 private _ShoppingCartSumaryObservable$ = new BehaviorSubject<null | IShoppingCartSummary>(null);
 ShoppingCartSumaryObservable = this._ShoppingCartSumaryObservable$.asObservable();
+
+private shippingPrice = 0;
+
+//shipping Price Methods
+setShippingPrice(delivery: IDeliveryMethods){
+
+  this.shippingPrice = delivery.deliveryPrice;
+  this.calculateShoppingCartSummary();
+
+
+}
+
 
 //Physical Shopping Cart Methods 
 getShoppingCart(){
@@ -47,9 +60,7 @@ removeShoppingCart(){
   localStorage.removeItem("shoppingCart");
 }
 
-
 //public methods for dealing with cart
-
 addItemToBasket(item :IProduct | ICartItem, qty:number=1){
 
 //check if item is a product or cartItem 
@@ -139,7 +150,7 @@ shoppingCart.items.forEach(i=>{
   quantity +=  i.quantity;
   subtotal += i.salesPrice * i.quantity;
 })
-let shipping = 0;
+let shipping = this.shippingPrice;
 let total = shipping + subtotal;
 
 this._ShoppingCartSumaryObservable$.next({quantity:quantity, shipping:shipping, subtotal:subtotal, total:total});

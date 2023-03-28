@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
@@ -15,6 +15,7 @@ import { HomeModule } from './Home/home.module';
 import { AccountModule } from './Account/account.module';
 import { ErrorsModule } from './Errors/errors.module';
 import { OrderModule } from './Order/order.module';
+import { JwtInterceptor } from './Core/Interceptors/jwt.interceptor';
 
 
 @NgModule({
@@ -36,7 +37,7 @@ import { OrderModule } from './Order/order.module';
     SharedModule,
     CoreModule
   ],
-  providers: [],
+  providers: [{provide:HTTP_INTERCEPTORS, useClass:JwtInterceptor, multi:true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

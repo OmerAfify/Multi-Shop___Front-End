@@ -3,8 +3,7 @@ import { ShoppingCartService } from 'src/app/Shared/Services/shopping-cart.servi
 
 @Component({
   selector: 'app-shopping-cart-summary',
-  templateUrl: './shopping-cart-summary.component.html',
-  styleUrls: ['./shopping-cart-summary.component.css']
+  templateUrl: './shopping-cart-summary.component.html'
 })
 export class ShoppingCartSummaryComponent implements OnInit {
 

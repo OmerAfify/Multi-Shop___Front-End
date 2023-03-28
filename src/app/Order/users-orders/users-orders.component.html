@@ -1,0 +1,46 @@
+
+  <!-- Breadcrumb Start -->
+  <div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark">Home</a>
+                <a class="breadcrumb-item text-dark">Orders</a>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-hover" style="cursor: pointer;">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Order</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let order of Orders">
+                        <th># {{order.orderId}}</th>
+                        <td> {{order.orderDate | date: 'medium'}}</td>
+                        <td>{{order.total | currency}}</td>
+                        <td>{{order.status}}</td>
+                        <td>
+                            <button class=" btn btn-primary" (click)="viewOrderDetails(order.orderId)">View Details</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+  
