@@ -15,8 +15,8 @@ import { ShoppingCartService } from 'src/app/Shared/Services/shopping-cart.servi
 })
 export class CheckoutComponent implements OnInit {
 
+  //properties 
   DeliveryMethods:IDeliveryMethods[]=[];
-
   CheckOutForm : FormGroup = new FormGroup(
     {
       "ShippingAddress": new FormGroup({
@@ -27,9 +27,11 @@ export class CheckoutComponent implements OnInit {
         "street" : new FormControl(null,Validators.required),
         "zipCode" : new FormControl(null,Validators.required),
       }),
-      "deliveryMethodId": new FormControl(null,Validators.required)
-    }
-  )
+      "deliveryMethodId": new FormControl(null,Validators.required),
+      "Payment": new FormGroup({
+        "paymentType": new FormControl(null, Validators.required)
+      })
+    })
 
   constructor(private checkOutService:CheckoutService, 
     private shoppingCartService:ShoppingCartService,
@@ -38,37 +40,44 @@ export class CheckoutComponent implements OnInit {
 
 ngOnInit(): void {
 
-this.accountService.getCurrentUserAddress().subscribe((address)=>{
-this.CheckOutForm.get("ShippingAddress")?.patchValue(address)
-})
+  this.GetDefaultUserShippingAddressInfo();
+  this.GetDeliveryMethodsOptions();
+  this.GetChoosenDeliveryMethod()
 
-this.checkOutService.getDeliveryMethods().subscribe((data)=>{
- this.DeliveryMethods = data;
+  }
+
+  createPaymentIntent(){
+if(this.shoppingCartService.getCurrentShoppingCart()==null)
+    return
+
+ this.shoppingCartService.CreateOrUpdatePaymentIntent().subscribe((shoppingCart)=>{
+console.log(shoppingCart);
     })
   }
 
 
-
- onSubmitForm(){
+onSubmitForm(){
 
 let shoppingCart = this.shoppingCartService.getCurrentShoppingCart();
 
-if(ShoppingCart==null)
-    return 
+if(shoppingCart!=null){
 
 let order:IOrderToCreate = {
-    shoppingCart: shoppingCart,
+    shoppingCartId: shoppingCart.id,
     shippingAddress: this.CheckOutForm.get("ShippingAddress")?.value,
     deliveryMethodId: this.CheckOutForm.get("deliveryMethodId")?.value
   }
   
 this.checkOutService.createOrder(order).subscribe((order)=>{
 //toaster notify
-
-this.shoppingCartService.removeShoppingCart();
-this.router.navigate(['/OrderSuccess',order.orderId])
-
+if(shoppingCart){
+   this.shoppingCartService.removeShoppingCart(shoppingCart.id)?.subscribe();
+   this.router.navigate(['/OrderSuccess',order.orderId])
+}
    })
+  }else{
+    return;
+  }
     
   }
 
@@ -83,5 +92,32 @@ this.router.navigate(['/OrderSuccess',order.orderId])
     })
   }
 
+
+//ngOninit calls
+   GetDefaultUserShippingAddressInfo(){
+
+    this.accountService.getCurrentUserAddress().subscribe((address)=>{
+    this.CheckOutForm.get("ShippingAddress")?.patchValue(address)
+    })
+     
+    }
+    
+    GetDeliveryMethodsOptions(){
+    this.checkOutService.getDeliveryMethods().subscribe((data)=>{
+     this.DeliveryMethods = data;
+        })
+    
+    }
+
+
+   GetChoosenDeliveryMethod()
+  {
+    let shoppingCart = this.shoppingCartService.getCurrentShoppingCart();
+    
+    if(shoppingCart && shoppingCart.DeliveryMethodId){
+     console.log("id is : "+shoppingCart.DeliveryMethodId)
+      this.CheckOutForm.get("deliveryMethodId")?.patchValue(shoppingCart.DeliveryMethodId);
+    }
+    }
 
 }

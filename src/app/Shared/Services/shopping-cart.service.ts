@@ -6,58 +6,82 @@ import { IProduct } from '../Interfaces/IProduct';
 import { IShoppingCartSummary } from '../Interfaces/IShoppingCartSummary';
 import { IDeliveryMethods } from '../Interfaces/IDeliveryMethods';
 import { ShoppingCart } from '../Models/ShoppingCart';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingCartService {
 
-  constructor() { }
+  constructor(private http:HttpClient) { }
 
  private _ShoppingCartObservable$ = new BehaviorSubject<null | ShoppingCart>(null);
 ShoppingCartObservable = this._ShoppingCartObservable$.asObservable();
 
+
 private _ShoppingCartSumaryObservable$ = new BehaviorSubject<null | IShoppingCartSummary>(null);
 ShoppingCartSumaryObservable = this._ShoppingCartSumaryObservable$.asObservable();
 
-private shippingPrice = 0;
+//Payment Intent
+CreateOrUpdatePaymentIntent(){
+  return this.http.post<ShoppingCart>("https://localhost:44311/api/CreateOrUpdatePaymentIntent?shoppingCartId="+this.getCurrentShoppingCart()?.id,null).pipe(map((shoppingCart)=>{
+    this._ShoppingCartObservable$.next(shoppingCart); 
+   }))
+}
+
 
 //shipping Price Methods
 setShippingPrice(delivery: IDeliveryMethods){
 
-  this.shippingPrice = delivery.deliveryPrice;
-  this.calculateShoppingCartSummary();
+let shoppingCart = this.getCurrentShoppingCart();
 
+if(shoppingCart){
+ 
+  shoppingCart.DeliveryMethodId = delivery.id;
+
+  shoppingCart.shippingPrice = delivery.deliveryPrice;
+
+  this.setShoppingCart(shoppingCart);
+}
 
 }
 
 
 //Physical Shopping Cart Methods 
-getShoppingCart(){
-
-  let cart = localStorage.getItem("shoppingCart");
-
-  if(cart!==null){
-    this._ShoppingCartObservable$.next(JSON.parse(cart));
-    this.calculateShoppingCartSummary();
-  }else
-    this._ShoppingCartObservable$.next(null);
-}
-
+getShoppingCart(shoppingCartId:string){
+  this.http.get<ShoppingCart>("https://localhost:44311/api/GetShoppingCart?id="+shoppingCartId).subscribe(
+  {next : shoppingCart =>{this._ShoppingCartObservable$.next(shoppingCart);
+  this.calculateShoppingCartSummary();
+  } }
+  )}
+  
 setShoppingCart(shoppingCart:ShoppingCart){
-localStorage.setItem("shoppingCart",JSON.stringify(shoppingCart));
-this._ShoppingCartObservable$.next(shoppingCart);
-this.calculateShoppingCartSummary();
+  this.http.post<ShoppingCart>("https://localhost:44311/api/CreateOrUpdateShoppingCart", shoppingCart).subscribe(
+    {next : shoppingCart => {this._ShoppingCartObservable$.next(shoppingCart);
+      localStorage.setItem("shoppingCartId",shoppingCart.id);
+        this.calculateShoppingCartSummary();
+    } } )
 }
+
+removeShoppingCart(shoppingCartId:string | null){
+
+  if(shoppingCartId==null)
+     return;
+
+  return this.http.delete("https://localhost:44311/api/DeleteShoppingCart?id="+shoppingCartId).pipe(map((response)=>{
+  console.log("shopping cart removed? : "+ response);
+   this._ShoppingCartObservable$.next(null);
+  this._ShoppingCartSumaryObservable$.next(null);
+  localStorage.removeItem("shoppingCartId")
+  
+  }));
+ 
+}
+
 
 getCurrentShoppingCart(){
   return this._ShoppingCartObservable$.value;
-}
-
-removeShoppingCart(){
-  this._ShoppingCartObservable$.next(null);
-  this._ShoppingCartSumaryObservable$.next(null);
-  localStorage.removeItem("shoppingCart");
 }
 
 //public methods for dealing with cart
@@ -83,7 +107,6 @@ this.setShoppingCart(shoppingCart);
 
 }
 
-
 removeItemFromBasket(productId:number, qty:number=1){
 
   let shoppingCart = this.getCurrentShoppingCart();
@@ -101,7 +124,7 @@ removeItemFromBasket(productId:number, qty:number=1){
     }  
 
 if(shoppingCart.items.length<=0)
-    this.removeShoppingCart();
+    this.removeShoppingCart(shoppingCart.id);
 else 
     this.setShoppingCart(shoppingCart);
 
@@ -150,7 +173,7 @@ shoppingCart.items.forEach(i=>{
   quantity +=  i.quantity;
   subtotal += i.salesPrice * i.quantity;
 })
-let shipping = this.shippingPrice;
+let shipping = shoppingCart.shippingPrice;
 let total = shipping + subtotal;
 
 this._ShoppingCartSumaryObservable$.next({quantity:quantity, shipping:shipping, subtotal:subtotal, total:total});

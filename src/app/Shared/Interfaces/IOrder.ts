@@ -2,7 +2,7 @@ import { ShoppingCart } from "../Models/ShoppingCart"
 import { IAddress } from "./IAddress"
 
 export interface IOrderToCreate{
- shoppingCart: ShoppingCart | null,
+ shoppingCartId: string,
  deliveryMethodId:number,
  shippingAddress:IAddress
       }

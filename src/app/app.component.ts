@@ -25,10 +25,10 @@ export class AppComponent implements OnInit {
     }
 
     loadCurrentBasket(){
-      const basket = localStorage.getItem("shoppingCart");
+      const basketId = localStorage.getItem("shoppingCartId");
 
-      if(basket!==null)
-          this.cartService.getShoppingCart();
+      if(basketId!==null)
+          this.cartService.getShoppingCart(basketId);
       
     }
     
