@@ -123,11 +123,19 @@
                 <app-product-box [product]="product"></app-product-box>
                   </div>
                   
+                  <div class="d-flex justify-content-center" >
+                    <app-paging *ngIf="this.totalProductsCount!==0;" [itemsPerPage]="this.filterObject.pageSize" [totalItemsCount]="this.totalProductsCount"  (E_pageChanged)="OnPaginationChange($event)"></app-paging>
+                </div>
                  <!--end of productBox-->
                    
                 </div>
             </div>
             <!-- Shop Product End -->
+         
         </div>
+        
+     
+
+
     </div>
     <!-- Shop End -->

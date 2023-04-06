@@ -65,7 +65,7 @@ setShoppingCart(shoppingCart:ShoppingCart){
     } } )
 }
 
-removeShoppingCart(shoppingCartId:string | null){
+removeShoppingCart(shoppingCartId :string | null){
 
   if(shoppingCartId==null)
      return;
@@ -125,7 +125,7 @@ removeItemFromBasket(productId:number, qty:number=1){
     }  
 
 if(shoppingCart.items.length<=0)
-    this.removeShoppingCart(shoppingCart.id);
+    this.removeShoppingCart(shoppingCart.id)?.subscribe();
 else 
     this.setShoppingCart(shoppingCart);
 

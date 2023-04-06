@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ProductService } from 'src/app/Shared/Services/ProductsService';
 import { CategoryService } from 'src/app/Shared/Services/CategoryService';
 import { ICategory } from 'src/app/Shared/Interfaces/ICategory';
+import { Router } from '@angular/router';
 
 declare var $:any;
 
@@ -14,7 +15,9 @@ export class HomePageComponent implements OnInit {
 
   Categories:any;
   productsList:any;
-  constructor(private _productService:ProductService, private _categoryService: CategoryService) { }
+  constructor(private _productService:ProductService, 
+    private _categoryService: CategoryService, 
+    private router:Router) { }
 
   ngOnInit(): void {
 
@@ -36,6 +39,10 @@ export class HomePageComponent implements OnInit {
     });
   }
 
- 
+  goToShop(categoryId:number){
+   this._productService.selectedCategory$.next(categoryId);
+    this.router.navigate(["/Shop"]);
+
+  }
   
 }

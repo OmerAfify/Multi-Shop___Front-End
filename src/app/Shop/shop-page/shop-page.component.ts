@@ -4,7 +4,6 @@ import { IProduct } from 'src/app/Shared/Interfaces/IProduct';
 import { FilteringObject } from 'src/app/Shared/Models/FilteringObject';
 import { CategoryService } from 'src/app/Shared/Services/CategoryService';
 import { ProductService } from 'src/app/Shared/Services/ProductsService';
-import { ShoppingCartService } from 'src/app/Shared/Services/shopping-cart.service';
 
 declare var $:any;
 
@@ -15,10 +14,9 @@ declare var $:any;
 })
 export class ShopPageComponent implements OnInit {
 
+//properties 
 productsList:IProduct[]=[];
-
 categoryList:ICategory[]=[];
-
 sortOptions = [
   {name:'a to z', value:'aToZ'},
   {name:'z to a', value:'zToa'},
@@ -26,15 +24,27 @@ sortOptions = [
   {name:'Price: High to Low', value:'priceHtoL'},
 ]
 
+
 filterObject = new FilteringObject();
 
-  constructor(private _productService:ProductService, private _categoryService : CategoryService) { }
+totalProductsCount:any;
+ 
+//ctor
+constructor(private _productService:ProductService, private _categoryService : CategoryService) { }
 
-  ngOnInit(): void {
+//ngOninit
+ngOnInit(): void {
 
-    this.GetCategories();
+  this._productService.selectedCategory$.subscribe((currentCatId)=>{
+    this.filterObject.categoryId = currentCatId;
+    console.log("curenet selected cat id is "+ this._productService.selectedCategory$.value);
+  })
 
-    $(document).ready(function()  {
+  this.GetCategories();
+
+  this.GetProductsFiltered(this.filterObject);
+    
+  $(document).ready(function()  {
       let body = <HTMLDivElement> document.body;
       let script = document.createElement('script');
       script.innerHTML='';
@@ -45,47 +55,62 @@ filterObject = new FilteringObject();
       
     })
 
+  }
+
+//method ngoninit calls
+  GetProducts(){
     this._productService.getAllProducts().subscribe((data)=>{
       console.log(data);
       this.productsList=data});
 
   }
 
-
-  GetProductsFiltered(filterObject:FilteringObject){
-
-    this._productService.getProductsByFilteration(filterObject).subscribe(
-      (products)=>{
-        console.log(products.data);
-        this.productsList = products.data;
-    //  this.totalProductsCount = data.count;
-      }, error=>{console.log(error)}
-    );
-    }
-
-    GetCategories(){
+  GetCategories(){
       this._categoryService.getAllCategories().subscribe((cats)=>{
         this.categoryList = [{categoryId:0 , categoryName: "All"}, ...cats];
 
       })
     }
 
-    //EVENTS 
+    //methods 
+  GetProductsFiltered(filterObject:FilteringObject){
 
-OnSortChange(value1:any ){
-let value = value1.target.value;
+    this._productService.getProductsByFilteration(filterObject).subscribe(
+      (products)=>{
+        console.log(filterObject);
+        console.log(products.data);
+        this.productsList = products.data;
+      this.totalProductsCount = products.count;
+      }, error=>{console.log(error)}
+    );
+    }
 
-    if(value==null)
-          return;
+    OnPaginationChange(event:any){
+      if(this.filterObject.pageNumber!==event){
+        this.filterObject.pageNumber = event;
+        console.log("page value is changed to : "+event)
+        this.GetProductsFiltered(this.filterObject)
+      }
+      }
 
-    this.filterObject.sortBy = value;
-    this.GetProductsFiltered(this.filterObject);
-  }
+    //EVENTS Responses
+  OnSortChange(value1:any){
+  let value = value1.target.value;
+
+      if(value==null)
+            return;
+
+      this.filterObject.sortBy = value;
+      this.GetProductsFiltered(this.filterObject);
+    }
 
   OnCategoryIdSelected(categoryId:number){
     this.filterObject.categoryId = categoryId;
+
+   this._productService.selectedCategory$.next(categoryId);
+
     this.filterObject.pageNumber=1;
-    this.filterObject.pageSize=6;
+    this.filterObject.pageSize=2;
     this.GetProductsFiltered(this.filterObject);
   }
 
