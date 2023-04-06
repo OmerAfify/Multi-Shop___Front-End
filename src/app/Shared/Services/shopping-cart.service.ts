@@ -9,12 +9,14 @@ import { ShoppingCart } from '../Models/ShoppingCart';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
+import { ToastrService } from 'ngx-toastr';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingCartService {
 
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient, private toastr: ToastrService) { }
 
  private _ShoppingCartObservable$ = new BehaviorSubject<null | ShoppingCart>(null);
 ShoppingCartObservable = this._ShoppingCartObservable$.asObservable();
@@ -26,7 +28,7 @@ ShoppingCartSumaryObservable = this._ShoppingCartSumaryObservable$.asObservable(
 //Payment Intent
 CreateOrUpdatePaymentIntent(){
   return this.http.post<ShoppingCart>("https://localhost:44311/api/CreateOrUpdatePaymentIntent?shoppingCartId="+this.getCurrentShoppingCart()?.id,null).pipe(map((shoppingCart)=>{
-    this._ShoppingCartObservable$.next(shoppingCart); 
+ this._ShoppingCartObservable$.next(shoppingCart); 
    }))
 }
 
@@ -46,7 +48,6 @@ if(shoppingCart){
 }
 
 }
-
 
 //Physical Shopping Cart Methods 
 getShoppingCart(shoppingCartId:string){
@@ -79,7 +80,6 @@ removeShoppingCart(shoppingCartId:string | null){
  
 }
 
-
 getCurrentShoppingCart(){
   return this._ShoppingCartObservable$.value;
 }
@@ -103,6 +103,7 @@ if( this.isProduct(item))
 // additem to cart
 shoppingCart = this.AddOrUpdateCartItem(shoppingCart,cartItem,qty);
 
+this.toastr.success(`${item.productName} is added to cart`, 'Added to Cart')
 this.setShoppingCart(shoppingCart);
 
 }

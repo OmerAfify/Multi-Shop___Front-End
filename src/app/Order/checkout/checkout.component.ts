@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement, loadStripe } from '@stripe/stripe-js';
+import { ToastrService } from 'ngx-toastr';
 import { IDeliveryMethods } from 'src/app/Shared/Interfaces/IDeliveryMethods';
 import { IOrderToCreate } from 'src/app/Shared/Interfaces/IOrder';
 import { ShoppingCart } from 'src/app/Shared/Models/ShoppingCart';
@@ -16,7 +18,27 @@ import { ShoppingCartService } from 'src/app/Shared/Services/shopping-cart.servi
 export class CheckoutComponent implements OnInit {
 
   //properties 
+
   DeliveryMethods:IDeliveryMethods[]=[];
+
+@ViewChild("numberOnCard") numberOnCardElement?: ElementRef;
+@ViewChild("expiryDate") expiryDateElement?: ElementRef;
+@ViewChild("cvc") cvcElement?: ElementRef; 
+
+stripe : Stripe | null = null;
+cardNumber? : StripeCardNumberElement;
+cardExpiry? : StripeCardExpiryElement;
+cardCvc? : StripeCardCvcElement;
+
+
+cardNumberEvent : boolean = false;
+cardExpiryEvent :  boolean = false;
+cardCvcEvent:  boolean = false;
+
+
+
+cardErrors : any;
+
   CheckOutForm : FormGroup = new FormGroup(
     {
       "ShippingAddress": new FormGroup({
@@ -29,16 +51,68 @@ export class CheckoutComponent implements OnInit {
       }),
       "deliveryMethodId": new FormControl(null,Validators.required),
       "Payment": new FormGroup({
-        "paymentType": new FormControl(null, Validators.required)
+        "nameOnCard": new FormControl(null, Validators.required)
       })
     })
 
   constructor(private checkOutService:CheckoutService, 
     private shoppingCartService:ShoppingCartService,
     private accountService:AccountService, 
-    private router: Router) { }
+    private router: Router, private taostr:ToastrService) { }
 
 ngOnInit(): void {
+
+loadStripe("pk_test_51MrK1YEjTd25xYxuSrCffT1i7rKhnoyq6THl6zvf8k9oW8A22LdCy4ThzXcx3gQye0YxDrq1I7arHkljCcTf1YPp00Tb9s0Rsm")
+.then( stripe=>{
+
+  this.stripe = stripe;
+  const elements = stripe?.elements();
+
+  if(elements){
+    //card Number
+    this.cardNumber = elements.create('cardNumber');
+    this.cardNumber.mount(this.numberOnCardElement?.nativeElement);
+    this.cardNumber.on('change', event=>{
+
+      this.cardNumberEvent = event.complete;
+    
+      if(event.error)
+        this.cardErrors = event.error.message;   
+       else
+        this.cardErrors = null;
+    })
+
+    this.cardExpiry = elements.create('cardExpiry');
+    this.cardExpiry.mount(this.expiryDateElement?.nativeElement)
+    this.cardExpiry.on('change', event=>{
+
+      this.cardExpiryEvent = event.complete;
+
+      if(event.error)
+         this.cardErrors = event.error.message;
+      else
+        this.cardErrors = null;
+    })
+
+
+
+    this.cardCvc = elements.create('cardCvc');
+    this.cardCvc.mount(this.cvcElement?.nativeElement)
+    this.cardCvc.on('change', event=>{
+
+      this.cardCvcEvent = event.complete;
+   
+      if(event.error)
+        this.cardErrors = event.error.message;
+       else
+        this.cardErrors = null;
+    })
+
+  }
+})
+
+
+this.createPaymentIntent();
 
   this.GetDefaultUserShippingAddressInfo();
   this.GetDeliveryMethodsOptions();
@@ -46,40 +120,46 @@ ngOnInit(): void {
 
   }
 
-  createPaymentIntent(){
-if(this.shoppingCartService.getCurrentShoppingCart()==null)
-    return
-
- this.shoppingCartService.CreateOrUpdatePaymentIntent().subscribe((shoppingCart)=>{
-console.log(shoppingCart);
-    })
-  }
-
 
 onSubmitForm(){
 
-let shoppingCart = this.shoppingCartService.getCurrentShoppingCart();
+    let shoppingCart = this.shoppingCartService.getCurrentShoppingCart();
 
-if(shoppingCart!=null){
+    if(shoppingCart!=null){
+    let order:IOrderToCreate = {
+        shoppingCartId: shoppingCart.id,
+        shippingAddress: this.CheckOutForm.get("ShippingAddress")?.value,
+        deliveryMethodId: this.CheckOutForm.get("deliveryMethodId")?.value
+      }
 
-let order:IOrderToCreate = {
-    shoppingCartId: shoppingCart.id,
-    shippingAddress: this.CheckOutForm.get("ShippingAddress")?.value,
-    deliveryMethodId: this.CheckOutForm.get("deliveryMethodId")?.value
-  }
-  
 this.checkOutService.createOrder(order).subscribe((order)=>{
-//toaster notify
-if(shoppingCart){
-   this.shoppingCartService.removeShoppingCart(shoppingCart.id)?.subscribe();
-   this.router.navigate(['/OrderSuccess',order.orderId])
-}
-   })
-  }else{
+    //toaster notify
+    if(shoppingCart){
+      console.log(shoppingCart.clientSecret);
+        var cardId = shoppingCart.id;
+        this.stripe?.confirmCardPayment(shoppingCart.clientSecret!, {
+          payment_method :{card:this.cardNumber!,
+            billing_details : {
+            name: this.CheckOutForm.get("Payment")?.get("nameOnCard")?.value}
+          }}).then(result=>{
+            console.log(result);
+            if(result.paymentIntent){
+              this.shoppingCartService.removeShoppingCart(cardId)?.subscribe();
+              this.router.navigate(['/OrderSuccess',order.orderId])
+            }else{
+              this.taostr.error(result.error.message);
+            }
+      })
+    }    
+  else
     return;
-  }
-    
-  }
+
+  }); 
+
+
+  } 
+
+}
 
   SetShippingPrice(method: IDeliveryMethods){
          this.shoppingCartService.setShippingPrice(method);
@@ -92,6 +172,18 @@ if(shoppingCart){
     })
   }
 
+
+isValidPayment(){
+// console.log("-----------------------------------------------")
+//   console.log("name on card :"+this.CheckOutForm.get("Payment.nameOnCard")?.valid);
+// console.log("cardExpiryEvent :"+this.cardExpiryEvent);
+// console.log("cardNumberEvent :"+this.cardNumberEvent);
+// console.log("cardCvcEvent :"+this.cardCvcEvent);
+
+ var valid = this.CheckOutForm.get("Payment.nameOnCard")?.valid
+  && this.cardExpiryEvent && this.cardNumberEvent && this.cardCvcEvent; 
+  return valid;
+}
 
 //ngOninit calls
    GetDefaultUserShippingAddressInfo(){
@@ -109,7 +201,6 @@ if(shoppingCart){
     
     }
 
-
    GetChoosenDeliveryMethod()
   {
     let shoppingCart = this.shoppingCartService.getCurrentShoppingCart();
@@ -119,5 +210,14 @@ if(shoppingCart){
       this.CheckOutForm.get("deliveryMethodId")?.patchValue(shoppingCart.DeliveryMethodId);
     }
     }
+
+    createPaymentIntent(){
+      if(this.shoppingCartService.getCurrentShoppingCart()==null)
+          return;
+      
+       this.shoppingCartService.CreateOrUpdatePaymentIntent().subscribe((shoppingCart)=>{
+          })
+        }
+      
 
 }

@@ -17,6 +17,8 @@ import { ErrorsModule } from './Errors/errors.module';
 import { OrderModule } from './Order/order.module';
 import { JwtInterceptor } from './Core/Interceptors/jwt.interceptor';
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,9 @@ import { JwtInterceptor } from './Core/Interceptors/jwt.interceptor';
     AppRoutingModule,
     HttpClientModule,
 
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
+    
     ErrorsModule,
     AccountModule,
     ShopModule,

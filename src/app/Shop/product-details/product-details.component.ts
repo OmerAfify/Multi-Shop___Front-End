@@ -17,36 +17,45 @@ export class ProductDetailsComponent implements OnInit {
 
   constructor(private route:ActivatedRoute,
      private _productService:ProductService,
-     private _shoppingCartService: ShoppingCartService) {
+     private _shoppingCartService: ShoppingCartService
+   ) {
 
    }
 
  @Input() productId:any;
  product:any;
+ relatedProducts:any;
 
   ngOnInit(): void {
 
-this.route.params.subscribe(params=>this.productId=params['id'])
+this.route.params.subscribe((params)=>{this.productId=params['id'];
 
 this._productService.getProductById(this.productId).subscribe( (data : IProduct)=>{
-this.product = data;
-} );
-
-  $(document).ready(function()  {
-    let body = <HTMLDivElement> document.body;
-    let script = document.createElement('script');
-    script.innerHTML='';
-    script.src="../../../assets/js/main.js";
-    script.async=true;
-    script.defer=true;
-    body.appendChild(script);
-    
+  this.product = data;
+  } );
+  
+  this._productService.getRelatedProducts(this.productId).subscribe((relProds)=>{
+    this.relatedProducts = relProds;
   })
+  
+})
+
+$(document).ready(function()  {
+  let body = <HTMLDivElement> document.body;
+  let script = document.createElement('script');
+  script.innerHTML='';
+  script.src="../../../assets/js/main.js";
+  script.async=true;
+  script.defer=true;
+  body.appendChild(script);
+})
+
 
 }
 
-onAddToCart(){
-  this._shoppingCartService.addItemToBasket(this.product,1);
+onAddToCart(product:IProduct){
+
+  this._shoppingCartService.addItemToBasket(product,1);
 }
 
 

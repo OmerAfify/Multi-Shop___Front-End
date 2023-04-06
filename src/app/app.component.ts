@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AccountService } from './Shared/Services/AccountServices';
 import { ShoppingCartService } from './Shared/Services/shopping-cart.service';
 
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,7 +13,13 @@ export class AppComponent implements OnInit {
   title = 'OnlineShop';
 
 
-  constructor(private cartService:ShoppingCartService, private user:AccountService) {
+
+ 
+  constructor(private cartService:ShoppingCartService,
+     private user:AccountService
+     ,private toastr: ToastrService
+     
+     ) {
     
   }
 
@@ -24,6 +32,7 @@ export class AppComponent implements OnInit {
 
     }
 
+  
     loadCurrentBasket(){
       const basketId = localStorage.getItem("shoppingCartId");
 

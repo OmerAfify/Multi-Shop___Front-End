@@ -1,4 +1,6 @@
-interface ICategory{
+export interface ICategory{
 categoryId:number,
-categoryName:string
+categoryName:string,
+productsNumber?:number,
+categoryDescription?:string
 }

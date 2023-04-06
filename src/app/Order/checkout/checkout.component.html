@@ -122,28 +122,41 @@
                     <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Payment</span></h5>
                     <div class="bg-light p-30" formGroupName="Payment">
                         <div class="form-group">
-                            <div class="custom-control custom-radio">
+                                <label  for="debitOrCreditCard">Name on Card</label>
                                 <input 
-                                type="radio"
-                                (click)="createPaymentIntent()"
-                                formControlName="paymentType"
-                                class="custom-control-input"
-                                value="debitOrCreditCard"
-                                id="debitOrCreditCard">
-                                <label class="custom-control-label" for="debitOrCreditCard">Debit or Credit Card</label>
-                            </div>
+                                type="text"
+                                formControlName="nameOnCard"
+                                class="form-control"
+                                [class.invalid]="CheckOutForm.get('Payment.nameOnCard')?.touched && !CheckOutForm.get('Payment.nameOnCard')?.valid"
+                         
+                                >
                         </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input"
-                                formControlName="paymentType"
-                                value="cashOnDelivery"
-                                id="cashOnDelivery">
-                                <label class="custom-control-label" 
-                                for="cashOnDelivery">Cash on Delivery</label>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <div class="form-control" #numberOnCard>
+                                        <label>Card Number</label>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="col-3">
+                                <div class="form-floating">
+                                    <div class="form-control" #expiryDate>
+                                        <label>Expiry Date</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-floating">
+                                    <div class="form-control" #cvc>
+                                        <label>Cvc</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-danger">{{cardErrors}}</span>
+                
                         </div>
-                        <button [disabled]="!CheckOutForm.valid" type="submit" class="btn btn-block btn-primary font-weight-bold py-3">Place Order</button>
+                        <button [disabled]="!CheckOutForm.valid && !isValidPayment()" type="submit" class="btn btn-block btn-primary font-weight-bold py-3">Place Order</button>
                     </div>
                 </div>
             <!--End of Payment -->

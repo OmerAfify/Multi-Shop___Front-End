@@ -1,5 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ProductService } from 'src/app/Shared/Services/ProductsService';
+import { CategoryService } from 'src/app/Shared/Services/CategoryService';
+import { ICategory } from 'src/app/Shared/Interfaces/ICategory';
 
 declare var $:any;
 
@@ -10,8 +12,9 @@ declare var $:any;
 
 export class HomePageComponent implements OnInit {
 
+  Categories:any;
   productsList:any;
-  constructor(private _productService:ProductService) { }
+  constructor(private _productService:ProductService, private _categoryService: CategoryService) { }
 
   ngOnInit(): void {
 
@@ -28,6 +31,9 @@ export class HomePageComponent implements OnInit {
 
     this._productService.getAllProducts().subscribe( (data)=> this.productsList = data );
     
+    this._categoryService.getAllCategories().subscribe((categories)=>{
+    this.Categories = categories;
+    });
   }
 
  
