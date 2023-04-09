@@ -4,7 +4,7 @@ import { ProductBoxComponent } from './Components/product-box/product-box.compon
 import { ShoppingCartSummaryComponent } from './Components/shopping-cart-summary/shopping-cart-summary.component';
 import { RouterModule } from '@angular/router';
 import { CoreModule } from '../Core/core.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PaginationModule } from  'ngx-bootstrap/pagination';
 import { PagingComponent } from './Components/paging/paging.component'
 
@@ -16,9 +16,10 @@ import { PagingComponent } from './Components/paging/paging.component'
     CommonModule,
     RouterModule,
   ReactiveFormsModule,
+  FormsModule,
   PaginationModule.forRoot()
   ],
   exports:[ProductBoxComponent, ShoppingCartSummaryComponent, PagingComponent, 
-    ReactiveFormsModule, PaginationModule]
+    ReactiveFormsModule, PaginationModule, FormsModule]
 })
 export class SharedModule { }

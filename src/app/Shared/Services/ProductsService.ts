@@ -12,6 +12,8 @@ export class ProductService  implements OnInit {
 
     selectedCategory$ = new BehaviorSubject<number>(0);
 
+    filterObject$ = new BehaviorSubject<FilteringObject>({
+    });
 
      constructor(private http:HttpClient){
 
@@ -37,10 +39,11 @@ export class ProductService  implements OnInit {
 
     getProductsByFilteration(filterObject:FilteringObject){
          return this.http.get<IPagination>(
-             `https://localhost:44311/api/GetProductsByFiltration?sortBy=${(filterObject.sortBy!==undefined)?filterObject.sortBy:null}`
-             +`&categoryId=${(filterObject.categoryId!==undefined)?filterObject.categoryId:0}`
-             +`&requestParameters.PageNumber=${(filterObject.pageNumber!==undefined)?filterObject.pageNumber:1}`
-             +`&requestParameters.PageSize=${(filterObject.pageSize!==undefined)?filterObject.pageSize:6}`    
+             `https://localhost:44311/api/GetProductsByFiltration?requestParameters.PageNumber=${(filterObject.pageNumber!==undefined)?filterObject.pageNumber:1}`
+             +`&requestParameters.PageSize=${(filterObject.pageSize!==undefined)?filterObject.pageSize:6}`  
+             +`${(filterObject.sortBy!==undefined)?"&sortBy="+ filterObject.sortBy:""}`
+             +`${(filterObject.categoryId!==undefined)?"&categoryId="+filterObject.categoryId:""}`
+             +`${(filterObject.search!==undefined)?"&search="+filterObject.search:""}`          
          )    
     }
 

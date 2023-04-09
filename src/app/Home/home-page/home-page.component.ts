@@ -40,7 +40,11 @@ export class HomePageComponent implements OnInit {
   }
 
   goToShop(categoryId:number){
-   this._productService.selectedCategory$.next(categoryId);
+   
+    let filterObject = this._productService.filterObject$.value;
+    filterObject.categoryId = categoryId;
+    this._productService.filterObject$.next(filterObject);
+    
     this.router.navigate(["/Shop"]);
 
   }
