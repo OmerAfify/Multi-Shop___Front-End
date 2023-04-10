@@ -1,27 +1,54 @@
 # OnlineShop
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.16.
+E-Commerce Web App (Built with Angular and Dot net Core APIs) for buying products Online.
 
-## Development server
+features include : 
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## - Home Page
 
-## Code scaffolding
+![1- Home Page](https://user-images.githubusercontent.com/100993523/230971804-7ce3bcb3-7ce2-4214-b94b-f1587544cc85.png)
+<br/><br/><br/>
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## - Shop page
 
-## Build
+including Pagination, sorting, searching, filtering products by category.
+![2- Shop Page](https://user-images.githubusercontent.com/100993523/230972114-7dd6be75-cbdb-42d6-821c-cb1d5c29d884.png)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+<br/><br/><br/>
 
-## Running unit tests
+## - Products details page.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+![3- Product Details Page](https://user-images.githubusercontent.com/100993523/230972133-0808442f-75f3-415a-b647-215222ad621b.png)
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+<br/><br/><br/>
 
-## Further help
+## - Shopping Cart.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+![4- ShoppingCart](https://user-images.githubusercontent.com/100993523/230972202-64b0823d-3704-4732-9b15-a8c88092b67b.png)
+
+<br/><br/><br/>
+
+## - Tracking previous orders.
+
+![10 - View and track Orders](https://user-images.githubusercontent.com/100993523/230972146-b7e74105-f2b2-4510-8313-8bfd2848e890.png)
+
+<br/><br/><br/>
+
+## - Order success.
+
+![9- Order Success](https://user-images.githubusercontent.com/100993523/230972161-5cbba8eb-6990-45b3-be2c-053accbdb92a.png)
+
+<br/><br/><br/>
+
+## - Viewing order details.
+![11- Order Details](https://user-images.githubusercontent.com/100993523/230977387-e86426b7-8cd5-407c-bce0-09a385ca3db2.png)
+
+
+# Video of the website 
+
+
+
+https://user-images.githubusercontent.com/100993523/230978004-93bc9fc3-7fcc-4e08-b1ce-e6270cd0b10b.mp4
+
+
